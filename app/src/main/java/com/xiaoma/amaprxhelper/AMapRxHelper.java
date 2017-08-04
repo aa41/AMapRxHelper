@@ -1,9 +1,12 @@
 package com.xiaoma.amaprxhelper;
 
+import android.app.Application;
 import android.content.Context;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
+import com.amap.api.services.poisearch.PoiSearch;
+import com.xiaoma.amaprxhelper.entry.POIEntry;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -16,10 +19,15 @@ import io.reactivex.functions.Function;
  */
 
 public class AMapRxHelper {
+    private static Application app;
+
+    public static void init(Application application) {
+       app=application;
+    }
 
 
-    public static Observable<AMapLocation> createAMapLocation(Context context, final LocationSettingsListener listener) {
-        AMapLocationClient client = new AMapLocationClient(context);
+    public static Observable<AMapLocation> createAMapLocation(final LocationSettingsListener listener) {
+        AMapLocationClient client = new AMapLocationClient(app);
         return Observable.just(client)
                 .flatMap(new Function<AMapLocationClient, ObservableSource<AMapLocation>>() {
                     @Override
@@ -31,6 +39,19 @@ public class AMapRxHelper {
                     }
                 });
 
+    }
+
+
+    public static Observable<POIEntry> poiSearch(PoiSearch.Query query, String id, boolean isAsync) {
+        return new POISearchObservable(id, new PoiSearch(app, query), isAsync);
+    }
+
+    public static Observable<POIEntry> poiSearch(PoiSearch.Query query, String id) {
+        return poiSearch(query, id, true);
+    }
+
+    public static Observable<POIEntry> poiSearch(PoiSearch.Query query) {
+        return poiSearch(query, null, true);
     }
 
 
