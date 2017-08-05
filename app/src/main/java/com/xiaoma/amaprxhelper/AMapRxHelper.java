@@ -2,11 +2,17 @@ package com.xiaoma.amaprxhelper;
 
 import android.app.Application;
 import android.content.Context;
+import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.xiaoma.amaprxhelper.entry.POIEntry;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -22,7 +28,7 @@ public class AMapRxHelper {
     private static Application app;
 
     public static void init(Application application) {
-       app=application;
+        app = application;
     }
 
 
@@ -55,22 +61,32 @@ public class AMapRxHelper {
     }
 
 
-    public static void checkClient(AMapLocationClient client) {
-        if (client == null) {
-            throw new NullPointerException("AMapLocationClient==null???");
-        }
+    public static Observable<List<Tip>> inputTipsSearch(InputtipsQuery query, boolean isAsync) {
+        Inputtips inputtips = new Inputtips(app, query);
+        return new InputTipsObservable(inputtips, isAsync);
     }
+
+    public static Observable<List<Tip>> inputTipsSearch(InputtipsQuery query) {
+        return inputTipsSearch(query, true);
+    }
+
+    public static Observable<List<Tip>> inputTipsWithEditText(TextView textView, String args, boolean isTextOrCity) {
+        return new InputTipsWithEditTextObservable(args, app, isTextOrCity, textView);
+    }
+
+    public static Observable<List<Tip>> inputTipsWithEditText(TextView textView, String args) {
+        return new InputTipsWithEditTextObservable(args, app, true, textView);
+    }
+
+
 
 
     public interface LocationSettingsListener {
         void locationOptions(AMapLocationClient client);
     }
+    
 
-    private LocationSettingsListener listener;
 
-    public void setLocationSettingsListener(LocationSettingsListener listener) {
-        this.listener = listener;
-    }
 
 
 }

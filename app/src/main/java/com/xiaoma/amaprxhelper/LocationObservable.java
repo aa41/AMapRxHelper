@@ -30,8 +30,18 @@ public class LocationObservable extends Observable<AMapLocation> {
         aMapLocationClient.setLocationListener(callBack);
         observer.onSubscribe(callBack);
         aMapLocationClient.startLocation();
-
     }
+
+    public void  stopLocation(){
+        aMapLocationClient.stopLocation();
+    }
+
+
+    public void startLocation(){
+        aMapLocationClient.startLocation();
+    }
+
+
 
 
     private static final class AMapCallBack implements AMapLocationListener, Disposable {
